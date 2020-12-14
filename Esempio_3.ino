@@ -1,0 +1,90 @@
+
+#include <Arduino_FreeRTOS.h>
+#include "task.h"
+
+
+// Quarto esempio in cui approfondiamo meglio la funzione xTaskCreate()
+
+BaseType_t Status_task_1;
+
+BaseType_t Status_task_2;
+
+
+const char *pcName_1 = "Task 1 is running";
+
+const char *pcName_2 = "Task 2 is running";
+
+//TaskHandle_t Task_1_Handle;
+
+
+void setup() {
+
+  Serial.begin(9600);
+
+  Status_task_1 = xTaskCreate( Task_1, "Task_1", 100, (void *) pcName_1, 1, NULL);
+
+  Status_task_2 = xTaskCreate( Task_2, "Task_2", 100, (void *) pcName_2, 1, NULL);
+
+  //Serial.println(Status_task_1);
+  //Serial.println( pcTaskGetName( Task_1_Handle ) );
+
+
+  /*
+   * 1) E' puntatore alla funzione del task
+   * 2) E' un nome descrittivo della funzione
+   * 3) Dimensione dello stack
+   * 4) E' un puntatore a void ed è il parametro in ingresso al nostro task
+   * 5) Priotrità con cui viene eseguito un task
+   * 6) E' un opuntatore al task che stiamo creando, attraverso di esso possiamo eseguire 
+   * delle operazioni a run time.
+  */
+
+  //vTaskStartScheduler();
+
+}
+
+
+void Task_1(void *pvParameters) {
+
+  //const char *pcName = "Task_1 is running";
+
+  
+  
+  while(1) {
+
+
+    //Serial.println(pcName);
+    
+    Serial.println((char *) pvParameters);
+
+    delay(1000);
+  }
+}
+
+
+void Task_2(void *pvParameters) {
+
+  //const char *pcName = "Task_2 is running";
+  
+  while(1) {
+
+    //Serial.println(pcName);
+    
+    Serial.println((char *) pvParameters);
+
+    delay(1000);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+}
