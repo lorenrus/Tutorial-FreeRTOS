@@ -1,1 +1,104 @@
 
+
+#include <Arduino_FreeRTOS.h>
+
+
+/*  CODICE CON TASK AVENTI LA STESSA PRIORITA' - VTASKDELAY() E VTASK DELAYUNTIL() */
+
+/*
+ * vTaskDelay( TickType_t Tick_Delay); ---> INCLUDE_vTaskDelay      1
+ * 
+ * pdMS_TO_TICKS( Valore in ms);
+ * 
+ * vTaskDelayUntil( TickType_t *Last_Time, TickType_t Tick_Delay )
+ */
+void setup() {
+  
+
+  Serial.begin(9600);
+
+  xTaskCreate(Task_1, "Task 1", 100, NULL, 1, NULL);
+
+  xTaskCreate(Task_2, "Task 2", 100, NULL, 2, NULL);
+
+}
+
+
+void Task_1 (void *pvParameters) {
+
+  while(1) {
+
+    Serial.println("Task_1 is in RUNNING STATE");
+
+    vTaskDelay(pdMS_TO_TICKS(300));
+  }
+}
+
+
+void Task_2 (void *pvParameters) {
+
+  TickType_t Last_Time = xTaskGetTickCount();
+  
+  while(1) {
+
+    Serial.println("Task_2 is in RUNNING STATE");
+
+    //vTaskDelay(100);
+
+    vTaskDelayUntil( &Last_Time, pdMS_TO_TICKS(500));
+  }
+}
+
+
+
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
+
+
+
+
+
+/*  CODICE CON TASK AVENTI LA STESSA PRIORITA' - PROBLEMA DEL POLLING */
+/*
+void setup() {
+  
+
+  Serial.begin(9600);
+
+  xTaskCreate(Task_1, "Task 1", 100, NULL, 1, NULL);
+
+  xTaskCreate(Task_2, "Task 2", 100, NULL, 2, NULL);
+
+}
+
+
+void Task_1 (void *pvParameters) {
+
+  while(1) {
+
+    Serial.println("Task_1 is in RUNNING STATE");
+  }
+}
+
+
+void Task_2 (void *pvParameters) {
+
+  while(1) {
+
+    Serial.println("Task_2 is in RUNNING STATE");
+  }
+}
+
+
+
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
+*/
