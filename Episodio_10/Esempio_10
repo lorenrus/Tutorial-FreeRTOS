@@ -1,1 +1,115 @@
 
+
+
+#include <Arduino_FreeRTOS.h>
+#include "queue.h"
+
+QueueHandle_t Queue_Handle;
+
+
+int *Malloc_Pointer;
+
+
+void setup() {
+  // put your setup code here, to run once:
+
+  Serial.begin(9600);
+  
+
+  Queue_Handle = xQueueCreate(4, sizeof(int *));
+
+  
+
+  if(Queue_Handle != NULL) {
+
+    Serial.println("Coda ok");
+
+    xTaskCreate( Sender_Task, "Sender 1", 100, NULL, 2, NULL);
+
+    xTaskCreate( Receiver_Task, "Receiver", 700, NULL, 1, NULL);
+
+    Malloc_Pointer = (int *) malloc(sizeof((int *) 5));
+  }
+  else {
+    
+    Serial.println("Error");
+  }
+
+  
+  //vTaskStartScheduler();
+  //for(;;);
+}
+
+
+void Sender_Task(void *pvParameters) {
+  
+  BaseType_t Status;
+
+  TickType_t TimetoWait = pdMS_TO_TICKS(100);
+
+  for(uint8_t i = 0; i < 50; i++) {
+
+     Malloc_Pointer[i] = i;
+  }
+
+  uint8_t i = 0;
+  
+  while(1) {
+
+//    for(uint8_t i = 0; i < 5; i++) {
+//
+//      Serial.println(Malloc_Pointer[i]);
+//    }
+    
+    Status = xQueueSendToBack(Queue_Handle, &Malloc_Pointer, TimetoWait);
+
+    if(Status != pdPASS) {
+
+      Serial.println("Error TX");
+    }
+    else {
+
+      Serial.println("Ok TX");
+      Serial.println(Malloc_Pointer[i]);
+      i++;
+    }
+  }
+}
+
+
+void Receiver_Task(void *pvParameters) {
+
+  int *Data_Received;
+
+  TickType_t TimetoWait = pdMS_TO_TICKS(500);
+
+  BaseType_t Status;
+
+  uint8_t i = 0;
+
+  while(1) {
+
+    Status = xQueueReceive(Queue_Handle, &Data_Received, 0);
+
+    if(Status != pdPASS) {
+
+      Serial.println("Error RX");
+    }
+    else {
+
+      Serial.println("Ok RX");
+
+      Serial.print("Data received : ");
+      Serial.println(Data_Received[i]);
+      i++;
+    }
+    free(Data_Received);
+  }
+}
+
+
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
